@@ -529,6 +529,11 @@ public abstract class BaseOpenIDConnectAuthenticator
 	 */
 	protected boolean noForm = false;
 
+    /**
+     * Tells if the username should be converted to lowercase.
+     */
+    protected boolean lowercaseUsername = false;
+
 	/**
 	 * HTTP connect timeout for OP endpoints.
 	 */
@@ -665,6 +670,27 @@ public abstract class BaseOpenIDConnectAuthenticator
 
 		this.noForm = noForm;
 	}
+
+    /**
+     * Tell if username should be converted to lowercase.
+     *
+     * @return {@code true} if lowercase conversion is enabled.
+     */
+    public boolean isLowercaseUsername() {
+
+        return this.lowercaseUsername;
+    }
+
+    /**
+     * Set flag that tells if username should be converted to lowercase to avoid
+     * confusion with mixed-case spellings.
+     *
+     * @param lowercase {@code true} to enable lowercase conversion.
+     */
+    public void setLowercaseUsername(final boolean lowercase) {
+
+        this.lowercaseUsername = lowercase;
+    }
 
 	/**
 	 * Get HTTP connect timeout used for server-to-server communication with the
@@ -1414,7 +1440,7 @@ public abstract class BaseOpenIDConnectAuthenticator
 			}
 			usernameClaimContainer = (JSONObject) v;
 		}
-		final String username = usernameClaimContainer.optString(
+		String username = usernameClaimContainer.optString(
 				usernameClaimParts[usernameClaimParts.length - 1], null);
 		if (username == null) {
 			if (debug)
@@ -1424,6 +1450,9 @@ public abstract class BaseOpenIDConnectAuthenticator
 			return null;
 		}
 
+		if (this.lowercaseUsername)
+			username = username.toLowerCase();
+		
 		// authenticate the user in the realm
 		if (debug)
 			this.log.debug("authenticating user \"" + username + "\"");
