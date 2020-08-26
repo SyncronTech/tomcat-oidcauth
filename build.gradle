@@ -43,14 +43,14 @@ ext.sharedManifest = manifest {
 }
 
 task mainTomcat85Jar(type: Jar) {
-	classifier 'tomcat85'
+	classifier 'tomcat85-st'
 	from sourceSets.mainTomcat85.output
 	manifest = project.manifest {
 		from sharedManifest
 	}
 }
 task mainTomcat90Jar(type: Jar) {
-	classifier 'tomcat90'
+	classifier 'tomcat90-st'
 	from sourceSets.mainTomcat90.output
 	manifest = project.manifest {
 		from sharedManifest
