@@ -45,6 +45,10 @@ ext.sharedManifest = manifest {
 task mainTomcat85Jar(type: Jar) {
 	classifier 'tomcat85-st'
 	from sourceSets.mainTomcat85.output
+	into("META-INF/maven/$project.group/$project.name") {
+        from { generatePomFileForMavenJavaPublication }
+        rename ".*", "pom.xml"
+    }
 	manifest = project.manifest {
 		from sharedManifest
 	}
@@ -52,6 +56,10 @@ task mainTomcat85Jar(type: Jar) {
 task mainTomcat90Jar(type: Jar) {
 	classifier 'tomcat90-st'
 	from sourceSets.mainTomcat90.output
+	into("META-INF/maven/$project.group/$project.name") {
+        from { generatePomFileForMavenJavaPublication }
+        rename ".*", "pom.xml"
+    }
 	manifest = project.manifest {
 		from sharedManifest
 	}
@@ -121,9 +129,23 @@ publishing {
 		}
 	}
 	repositories {
-		maven {
-			name = 'local'
-			url = "file://${buildDir}/repo"
+		if(project.hasProperty('mavenUrl')) {
+			maven {
+				name = 'remote'
+				url = project.property('mavenUrl')
+
+				if(project.hasProperty('mavenUsername')) {
+					credentials {
+						username project.property('mavenUsername')
+						password project.property('mavenPassword')
+					}
+				}
+			}
+		} else {
+			maven {
+				name = 'local'
+				url = "file://${buildDir}/repo"
+			}
 		}
 	}
 }
